@@ -1,0 +1,36 @@
+{
+  "name": "quote-viewer",
+  "version": "0.0.6",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "zip:all": "bun run zip && bun run zip:firefox",
+    "compile": "tsc --noEmit",
+    "gen-key": "bun scripts/gen-key.ts",
+    "postinstall": "wxt prepare",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "changeset": "changeset",
+    "version": "changeset version && wxt prepare",
+    "release": "bun run zip:all && changeset tag",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.0",
+    "@types/bun": "latest",
+    "lefthook": "^2.1.8",
+    "oxfmt": "^0.51.0",
+    "oxlint": "^1.66.0",
+    "ultracite": "7.7.0",
+    "wxt": "^0.20.26"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

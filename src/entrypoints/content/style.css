@@ -1,0 +1,25 @@
+.quoted-tweets-container {
+  display: flex;
+  justify-content: center;
+  margin-right: 6px;
+}
+
+.quoted-tweets-container > div {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  color: #536471;
+  padding: 6px;
+}
+
+.quoted-tweets-container > div:hover {
+  color: #1d9bf0;
+  border-radius: 50%;
+  border: 0px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: rgba(29, 155, 240, 0.1);
+  border-radius: 50%;
+}
