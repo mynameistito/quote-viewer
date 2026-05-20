@@ -49,7 +49,7 @@ bun run zip:all          # produces .output/quote-viewer-<v>-{chrome,firefox}.zi
 
 ## Linting / formatting
 
-Unchanged from the existing setup — [Ultracite](https://ultracite.dev) on top of `oxlint` + `oxfmt`:
+[Ultracite](https://ultracite.dev) on top of `oxlint` + `oxfmt`:
 
 ```bash
 bun run check
@@ -67,3 +67,6 @@ bun run changeset       # describe the change
 On push to `main`, the workflow in `.github/workflows/release.yml` opens (or merges) a "Version Packages" PR. Merging it bumps `package.json`, tags, runs `bun run release` (which builds & zips both browsers), and uploads `quote-viewer-<v>-chrome.zip` + `quote-viewer-<v>-firefox.zip` to a new GitHub Release.
 
 `WXT_CHROME_KEY` must be set as a repo secret so the released Chromium build is signed with the persistent key.
+
+## License
+[MIT](LICENSE)
