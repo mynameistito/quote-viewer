@@ -43,9 +43,15 @@ export default defineContentScript({
 
     const observer = new MutationObserver((mutationsList) => {
       for (const mutation of mutationsList) {
-        if (mutation.addedNodes.length) {
-          for (const article of document.querySelectorAll("article")) {
-            setViewQuotedTweetsIcon(article);
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof Element)) {continue;}
+
+          if (node.tagName === "ARTICLE") {
+            setViewQuotedTweetsIcon(node);
+          } else {
+            for (const article of node.querySelectorAll("article")) {
+              setViewQuotedTweetsIcon(article);
+            }
           }
         }
       }
