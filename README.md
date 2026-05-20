@@ -69,4 +69,5 @@ On push to `main`, the workflow in `.github/workflows/release.yml` opens (or mer
 `WXT_CHROME_KEY` must be set as a repo secret so the released Chromium build is signed with the persistent key.
 
 ## License
+
 [MIT](LICENSE)
