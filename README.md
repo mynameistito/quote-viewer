@@ -2,6 +2,10 @@
 
 A cross-browser MV3 extension that brings back the "view quote tweets" button on twitter.com / x.com. Rewritten in TypeScript on top of [WXT](https://wxt.dev/).
 
+This Extension was created with the intention of minimising the number of closed sourced extensions I was utilsing.
+
+Originally forked from: [View Quote Tweets on Twitter - QuickQuotes](https://chromewebstore.google.com/detail/view-quote-tweets-on-twit/ebjigpojdkoclfidpgjkcgmdnjlajgej)
+
 ## Setup
 
 ```bash
