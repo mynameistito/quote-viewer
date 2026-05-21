@@ -41,6 +41,11 @@ export default defineContentScript({
   main() {
     console.log("view quoted tweets extension: setting up observer");
 
+    // Initial pass over existing articles on the page
+    for (const article of document.querySelectorAll("article")) {
+      setViewQuotedTweetsIcon(article);
+    }
+
     const observer = new MutationObserver((mutationsList) => {
       for (const mutation of mutationsList) {
         for (const node of mutation.addedNodes) {
