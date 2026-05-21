@@ -28,11 +28,18 @@ export const getTweetDetails = (article: Element): TweetDetails => {
   if (tweetAnchor) {
     const href = tweetAnchor.getAttribute("href");
     if (href) {
-      const parts = href.split("/");
-      const statusIdx = parts.indexOf("status");
-      const [candidate] = parts.slice(statusIdx + 1, statusIdx + 2);
-      if (statusIdx !== -1 && candidate) {
-        tweetId = candidate;
+      try {
+        const url = new URL(href, window.location.origin);
+        const parts = url.pathname.split("/").filter(Boolean);
+        const statusIdx = parts.indexOf("status");
+        if (statusIdx !== -1) {
+          const candidate = parts[statusIdx + 1];
+          if (candidate) {
+            tweetId = candidate;
+          }
+        }
+      } catch {
+        // ignore invalid URLs
       }
     }
   }

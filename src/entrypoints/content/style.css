@@ -4,7 +4,7 @@
   margin-right: 6px;
 }
 
-.quoted-tweets-container > div {
+.quoted-tweets-container > button {
   display: flex;
   cursor: pointer;
   align-items: center;
@@ -12,7 +12,7 @@
   padding: 6px;
 }
 
-.quoted-tweets-container > div:hover {
+.quoted-tweets-container > button:hover {
   color: #1d9bf0;
   border-radius: 50%;
   border: 0px solid black;
@@ -21,5 +21,4 @@
   align-items: center;
   text-align: center;
   background-color: rgba(29, 155, 240, 0.1);
-  border-radius: 50%;
 }

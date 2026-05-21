@@ -2,4 +2,4 @@
 "quote-viewer": minor
 ---
 
-Initial rewrite of original chrome extension.
+Initial rewrite of original Chrome extension.

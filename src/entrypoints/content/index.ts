@@ -22,8 +22,10 @@ const setViewQuotedTweetsIcon = (article: Element): void => {
   const container = document.createElement("div");
   container.classList.add("quoted-tweets-container");
 
-  const icon = document.createElement("div");
+  const icon = document.createElement("button");
+  icon.type = "button";
   icon.innerHTML = QUOTE_ICON_SVG;
+  icon.setAttribute("aria-label", "View quoted tweets");
   icon.addEventListener("click", (e) => {
     e.stopImmediatePropagation();
     const { tweetId, twitterHandle } = getTweetDetails(article);
