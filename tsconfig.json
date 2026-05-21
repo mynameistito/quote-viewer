@@ -13,7 +13,8 @@
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+    "types": ["bun"]
   },
   "include": [".wxt/wxt.d.ts", "src/**/*", "wxt.config.ts", "scripts/**/*"]
 }
