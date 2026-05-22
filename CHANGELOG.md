@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.1.2
+
+### Patch Changes
+
+- f816276: Fix `scripts/publish-release.ts` failing to find built extension zips. `Bun.Glob.scan` defaults to `dot: false`, which skipped the `.output/` directory because it starts with a dot. Pass `dot: true` so the `.output/*.zip` glob matches the chrome and firefox bundles produced by `wxt zip`.
+
 ## 0.1.1
 
 ### Patch Changes
