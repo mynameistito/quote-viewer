@@ -3,17 +3,19 @@
  * Creates a GitHub Release for the current `package.json` version and uploads
  * the built extension zips from `.output/` as release assets.
  *
- * Intended to be run from CI after `bun run release` has produced the zips
- * and `changeset tag` has pushed the `v<version>` tag. Requires the `gh` CLI
- * to be authenticated (the GitHub Actions runner provides this via
- * `GH_TOKEN`/`GITHUB_TOKEN`).
+ * Designed to be the last step of `bun run release`, run by `changesets/action`
+ * after `bun run zip:all && changeset tag` has produced the zips and created
+ * the local `v<version>` tag. Requires `gh` CLI auth (the GitHub Actions
+ * runner provides this via `GH_TOKEN`/`GITHUB_TOKEN`).
  *
- * If a release already exists for this tag (e.g. an empty release left
- * behind by a previous failed run, or one auto-created by another workflow),
- * we delete it first and re-create it with the assets attached. This is
- * required because the repo uses GitHub Immutable Releases — existing
- * releases cannot be mutated, only replaced. Deleting the release leaves
- * the git tag in place, so `gh release create` reuses it.
+ * - The local tag from `changeset tag` is never pushed. Instead we pass
+ *   `--target $GITHUB_SHA` to `gh release create`, so the GitHub API creates
+ *   the tag server-side at the workflow's commit. This removes the need for
+ *   the runner to have git push credentials.
+ * - The repo uses GitHub Immutable Releases, so a pre-existing release for
+ *   the tag (e.g. left over from a previous failed run) cannot be edited.
+ *   We delete it first, then recreate with assets attached. Deleting a
+ *   release leaves the git tag untouched.
  */
 import { Glob } from "bun";
 
@@ -61,6 +63,10 @@ if (exists) {
   }
 }
 
+// `changeset tag` only made the tag locally; `--target` tells the GitHub API
+// to create the tag server-side at this commit if it doesn't already exist.
+const target = process.env.GITHUB_SHA ?? "HEAD";
+
 const create = Bun.spawnSync({
   cmd: [
     "gh",
@@ -68,6 +74,8 @@ const create = Bun.spawnSync({
     "create",
     tag,
     ...zips,
+    "--target",
+    target,
     "--title",
     tag,
     "--generate-notes",
