@@ -19,6 +19,7 @@
     "changeset": "changeset",
     "version": "changeset version && wxt prepare",
     "release": "bun run zip:all && changeset tag",
+    "publish-release": "bun scripts/publish-release.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {
