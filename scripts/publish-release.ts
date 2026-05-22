@@ -17,7 +17,11 @@ import pkg from "../package.json" with { type: "json" };
 
 const tag = `v${pkg.version}`;
 
-const zips = await Array.fromAsync(new Glob(".output/*.zip").scan("."));
+// `dot: true` is required because `.output/` starts with a dot and Bun's
+// Glob.scan ignores dotfiles/dirs by default.
+const zips = await Array.fromAsync(
+  new Glob(".output/*.zip").scan({ cwd: ".", dot: true })
+);
 if (zips.length === 0) {
   console.error(
     "No zips found in .output/. Did `bun run zip:all` run successfully?"
