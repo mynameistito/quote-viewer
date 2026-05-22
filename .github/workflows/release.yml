@@ -37,17 +37,15 @@ jobs:
         with:
           # When the "Version Packages" PR is merged, this runs `bun run release`
           # which produces .output/quote-viewer-<v>-chrome.zip + -firefox.zip
+          # and creates the `v<version>` git tag via `changeset tag`.
           version: bun run version
           publish: bun run release
-          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}
 
-      - name: Upload built extensions to GitHub Release
+      - name: Create GitHub Release with extension zips
         if: steps.changesets.outputs.published == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="v$(node -p "require('./package.json').version")"
-          gh release upload "$tag" .output/*.zip --clobber
+        run: bun run publish-release
