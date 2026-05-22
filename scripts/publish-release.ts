@@ -61,6 +61,14 @@ if (exists) {
   }
 }
 
+// `changeset tag` only creates the tag locally; previous runs got away with
+// not pushing it because `changesets/action`'s default
+// `createGithubReleases: true` made the GitHub API create the tag as a side
+// effect of creating the release. Now that we manage releases ourselves we
+// pass `--target` so the tag is created on the server side at the current
+// commit (the merge commit on main that triggered this workflow).
+const target = process.env.GITHUB_SHA ?? "HEAD";
+
 const create = Bun.spawnSync({
   cmd: [
     "gh",
@@ -68,6 +76,8 @@ const create = Bun.spawnSync({
     "create",
     tag,
     ...zips,
+    "--target",
+    target,
     "--title",
     tag,
     "--generate-notes",
