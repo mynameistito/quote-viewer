@@ -31,26 +31,25 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Create Release Pull Request or build extension
-        id: changesets
+      - name: Create Release Pull Request or release extension
         uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b
         with:
-          # When the "Version Packages" PR is merged, this runs `bun run release`
-          # which produces .output/quote-viewer-<v>-chrome.zip + -firefox.zip
-          # and creates the `v<version>` git tag via `changeset tag`.
+          # `bun run version` bumps package.json + writes CHANGELOG.md.
+          # `bun run release` (only runs after the Version Packages PR is
+          # merged) does the whole release in one shot:
+          #   zip:all  → produces .output/quote-viewer-<v>-{chrome,firefox}.zip
+          #   changeset tag → creates the local v<version> tag
+          #   publish-release → creates the GitHub Release at $GITHUB_SHA
+          #     with the zips attached (also creates the remote tag via
+          #     `gh release create --target`).
           version: bun run version
           publish: bun run release
-          # We create the GitHub Release ourselves in the next step so we can
-          # attach the .output/*.zip assets atomically. Without this the
-          # action would default to creating an empty release first, which
-          # cannot then be modified when the repo has Immutable Releases on.
+          # Disabled because publish-release.ts owns release creation; without
+          # this the action would race us by creating an empty (immutable)
+          # release first.
           createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}
-
-      - name: Create GitHub Release with extension zips
-        if: steps.changesets.outputs.published == 'true'
-        env:
+          # `gh` CLI used by publish-release.ts reads GH_TOKEN.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bun run publish-release
+          WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}

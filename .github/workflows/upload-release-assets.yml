@@ -13,6 +13,10 @@ on:
         description: "Release tag to (re)create with zips (e.g. v0.1.2)"
         required: true
         type: string
+      ref:
+        description: "Git ref or SHA to build from. Defaults to the tag itself. Required when the tag is not yet on the remote (e.g. for v0.1.3, pass the merge commit SHA)."
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ inputs.tag }}
@@ -26,10 +30,11 @@ jobs:
     name: Upload zips to ${{ inputs.tag }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout tag
+      - name: Checkout ref
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
-          ref: ${{ inputs.tag }}
+          # Defaults to the tag; pass `ref` when the tag isn't on the remote.
+          ref: ${{ inputs.ref || inputs.tag }}
           persist-credentials: false
 
       - name: Setup Bun
@@ -55,8 +60,14 @@ jobs:
         # release keeps the git tag intact.
         run: |
           tag='${{ inputs.tag }}'
+          sha="$(git rev-parse HEAD)"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Deleting existing release $tag (tag is preserved)…"
             gh release delete "$tag" --yes
           fi
-          gh release create "$tag" .output/*.zip --title "$tag" --generate-notes
+          # --target lets gh create the tag server-side when it doesn't
+          # already exist on the remote (e.g. v0.1.3).
+          gh release create "$tag" .output/*.zip \
+            --target "$sha" \
+            --title "$tag" \
+            --generate-notes
