@@ -40,6 +40,11 @@ jobs:
           # and creates the `v<version>` git tag via `changeset tag`.
           version: bun run version
           publish: bun run release
+          # We create the GitHub Release ourselves in the next step so we can
+          # attach the .output/*.zip assets atomically. Without this the
+          # action would default to creating an empty release first, which
+          # cannot then be modified when the repo has Immutable Releases on.
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}
