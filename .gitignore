@@ -49,3 +49,6 @@ report.*.json
 
 # Temp files
 temp/
+
+# Antigravitycli
+.antigravitycli/
