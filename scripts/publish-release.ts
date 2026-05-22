@@ -8,8 +8,12 @@
  * to be authenticated (the GitHub Actions runner provides this via
  * `GH_TOKEN`/`GITHUB_TOKEN`).
  *
- * If the release already exists (e.g. a retry), assets are uploaded with
- * `--clobber` instead of failing.
+ * If a release already exists for this tag (e.g. an empty release left
+ * behind by a previous failed run, or one auto-created by another workflow),
+ * we delete it first and re-create it with the assets attached. This is
+ * required because the repo uses GitHub Immutable Releases — existing
+ * releases cannot be mutated, only replaced. Deleting the release leaves
+ * the git tag in place, so `gh release create` reuses it.
  */
 import { Glob } from "bun";
 
@@ -41,30 +45,40 @@ const exists =
     stdout: "ignore",
   }).exitCode === 0;
 
-const proc = exists
-  ? Bun.spawnSync({
-      cmd: ["gh", "release", "upload", tag, ...zips, "--clobber"],
-      stderr: "inherit",
-      stdout: "inherit",
-    })
-  : Bun.spawnSync({
-      cmd: [
-        "gh",
-        "release",
-        "create",
-        tag,
-        ...zips,
-        "--title",
-        tag,
-        "--generate-notes",
-      ],
-      stderr: "inherit",
-      stdout: "inherit",
-    });
+if (exists) {
+  console.log(
+    `Release ${tag} already exists; deleting it so we can recreate with assets (Immutable Releases blocks in-place edits).`
+  );
+  const del = Bun.spawnSync({
+    // --cleanup-tag=false (the default) keeps the v<version> git tag intact.
+    cmd: ["gh", "release", "delete", tag, "--yes"],
+    stderr: "inherit",
+    stdout: "inherit",
+  });
+  if (del.exitCode !== 0) {
+    console.error(`gh release delete failed for ${tag}.`);
+    process.exit(del.exitCode ?? 1);
+  }
+}
 
-if (proc.exitCode !== 0) {
-  console.error(`gh release ${exists ? "upload" : "create"} failed.`);
-  process.exit(proc.exitCode ?? 1);
+const create = Bun.spawnSync({
+  cmd: [
+    "gh",
+    "release",
+    "create",
+    tag,
+    ...zips,
+    "--title",
+    tag,
+    "--generate-notes",
+  ],
+  stderr: "inherit",
+  stdout: "inherit",
+});
+
+if (create.exitCode !== 0) {
+  console.error("gh release create failed.");
+  process.exit(create.exitCode ?? 1);
 }
 
 console.log(
