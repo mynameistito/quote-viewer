@@ -56,7 +56,7 @@ export default defineConfig({
           gecko: {
             data_collection_permissions: { required: ["none"] },
             id: "quote-viewer@mynameistito.com",
-            strict_min_version: "109.0",
+            strict_min_version: "140.0",
           },
         },
       };
