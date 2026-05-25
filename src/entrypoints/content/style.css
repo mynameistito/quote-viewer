@@ -1,7 +1,7 @@
 .quoted-tweets-container {
   display: flex;
   justify-content: center;
-  margin-right: 6px;
+  align-items: center;
 }
 
 .quoted-tweets-container > button {
@@ -10,15 +10,12 @@
   align-items: center;
   color: #536471;
   padding: 6px;
+  min-height: 36px;
+  min-width: 36px;
 }
 
 .quoted-tweets-container > button:hover {
   color: #1d9bf0;
   border-radius: 50%;
-  border: 0px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
   background-color: rgba(29, 155, 240, 0.1);
 }

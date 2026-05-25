@@ -12,11 +12,6 @@ const attachQuoteIcon = (article: Element): void => {
     return;
   }
 
-  const lastAction = actionBar.lastElementChild;
-  if (!lastAction) {
-    return;
-  }
-
   const container = document.createElement("div");
   container.classList.add("quoted-tweets-container");
 
