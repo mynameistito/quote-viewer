@@ -74,11 +74,17 @@ export default defineContentScript({
         }
 
         for (const node of mutation.addedNodes) {
-          if (
-            node instanceof Element &&
+          if (!(node instanceof Element)) {
+            continue;
+          }
+
+          const groups =
             node.getAttribute("role") === "group"
-          ) {
-            const article = node.closest("article");
+              ? [node]
+              : [...node.querySelectorAll('[role="group"]')];
+
+          for (const group of groups) {
+            const article = group.closest("article");
             if (article && PENDING.has(article)) {
               trySetIcon(article);
             }
