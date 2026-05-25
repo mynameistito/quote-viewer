@@ -54,6 +54,7 @@ export default defineConfig({
         ...base,
         browser_specific_settings: {
           gecko: {
+            data_collection_permissions: { required: ["none"] },
             id: "quote-viewer@mynameistito.com",
             strict_min_version: "109.0",
           },
