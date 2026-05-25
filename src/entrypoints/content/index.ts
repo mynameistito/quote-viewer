@@ -4,7 +4,32 @@ import { getTweetDetails, viewQuotedTweets } from "../../lib/tweet";
 
 import "./style.css";
 
-const QUOTE_ICON_SVG = `<svg width="1.6em" height="1.6em" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor"><path d="M10 12H5C4.44772 12 4 11.5523 4 11V7.5C4 6.94772 4.44772 6.5 5 6.5H9C9.55228 6.5 10 6.94772 10 7.5V12ZM10 12C10 14.5 9 16 6 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path><path d="M20 12H15C14.4477 12 14 11.5523 14 11V7.5C14 6.94772 14.4477 6.5 15 6.5H19C19.5523 6.5 20 6.94772 20 7.5V12ZM20 12C20 14.5 19 16 16 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>`;
+const SVG_NS = "http://www.w3.org/2000/svg";
+const QUOTE_ICON_PATHS = [
+  "M10 12H5C4.44772 12 4 11.5523 4 11V7.5C4 6.94772 4.44772 6.5 5 6.5H9C9.55228 6.5 10 6.94772 10 7.5V12ZM10 12C10 14.5 9 16 6 17.5",
+  "M20 12H15C14.4477 12 14 11.5523 14 11V7.5C14 6.94772 14.4477 6.5 15 6.5H19C19.5523 6.5 20 6.94772 20 7.5V12ZM20 12C20 14.5 19 16 16 17.5",
+];
+
+const createQuoteIconSvg = (): SVGSVGElement => {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("width", "1.6em");
+  svg.setAttribute("height", "1.6em");
+  svg.setAttribute("stroke-width", "1.5");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("color", "currentColor");
+
+  for (const d of QUOTE_ICON_PATHS) {
+    const path = document.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", d);
+    path.setAttribute("stroke", "currentColor");
+    path.setAttribute("stroke-width", "1.5");
+    path.setAttribute("stroke-linecap", "round");
+    svg.append(path);
+  }
+
+  return svg;
+};
 
 const attachQuoteIcon = (article: Element): void => {
   const actionBar = article.querySelector('[role="group"]');
@@ -17,7 +42,7 @@ const attachQuoteIcon = (article: Element): void => {
 
   const icon = document.createElement("button");
   icon.type = "button";
-  icon.innerHTML = QUOTE_ICON_SVG;
+  icon.append(createQuoteIconSvg());
   icon.setAttribute("aria-label", "View quoted tweets");
   icon.addEventListener("click", (e) => {
     e.stopImmediatePropagation();
