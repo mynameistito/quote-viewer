@@ -18,8 +18,8 @@
     "fix": "ultracite fix",
     "changeset": "changeset",
     "version": "changeset version && wxt prepare",
-    "release": "bun run zip:all && changeset tag && bun run publish-release",
-    "publish-release": "bun scripts/publish-release.ts",
+    "release": "bun run zip",
+    "ci:release": "bun run scripts/ci-release.ts",
     "prepare": "lefthook install"
   },
   "devDependencies": {
