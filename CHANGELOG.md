@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.2.1
+
+### Patch Changes
+
+- 9dfad14: Fix icon showing gray box without hover and white circle on hover, fix pending-article retry missing nested action bars
+
 ## 0.2.0
 
 ### Minor Changes
