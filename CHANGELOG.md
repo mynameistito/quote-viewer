@@ -1,5 +1,15 @@
 # quote-viewer
 
+## 0.2.0
+
+### Minor Changes
+
+- 768e468: Open x.com instead of twitter.com on extension install
+
+### Patch Changes
+
+- cdbbea1: Fix quote icon not appearing on timeline and profile pages
+
 ## 0.1.5
 
 ### Patch Changes
