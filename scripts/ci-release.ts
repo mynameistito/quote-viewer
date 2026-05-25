@@ -25,26 +25,21 @@ if (remoteTag) {
 
 const keyPath = resolve(ROOT, "key.pem");
 if (process.env.REQUIRE_CHROME_KEY && !existsSync(keyPath)) {
-  if (!process.env.EXTENSION_KEY_PEM) {
+  if (!process.env.WXT_CHROME_KEY) {
     console.error(
-      "EXTENSION_KEY_PEM secret is missing — cannot publish without a stable extension ID"
+      "WXT_CHROME_KEY secret is missing — cannot publish without a stable extension ID"
     );
     process.exit(1);
   }
-  writeFileSync(keyPath, process.env.EXTENSION_KEY_PEM);
+  writeFileSync(keyPath, process.env.WXT_CHROME_KEY);
 }
 
 run("bunx wxt prepare");
-run("bun run build");
-run("bun run build:firefox");
 run("bun run zip");
 run("bun run zip:firefox");
 
-const chromeZip = resolve(ROOT, `.output/hide-email-ext-${version}-chrome.zip`);
-const firefoxZip = resolve(
-  ROOT,
-  `.output/hide-email-ext-${version}-firefox.zip`
-);
+const chromeZip = resolve(ROOT, `.output/quote-viewer-${version}-chrome.zip`);
+const firefoxZip = resolve(ROOT, `.output/quote-viewer-${version}-firefox.zip`);
 
 if (!existsSync(chromeZip)) {
   console.error(`Chrome zip not found at ${chromeZip}`);

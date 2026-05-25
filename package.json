@@ -18,7 +18,7 @@
     "fix": "ultracite fix",
     "changeset": "changeset",
     "version": "changeset version && wxt prepare",
-    "release": "bun run build && bun run zip",
+    "release": "bun run zip",
     "ci:release": "bun run scripts/ci-release.ts",
     "prepare": "lefthook install"
   },

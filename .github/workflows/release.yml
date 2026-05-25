@@ -29,7 +29,8 @@ jobs:
         with:
           version: bun run version
           publish: bun run ci:release
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EXTENSION_KEY_PEM: ${{ secrets.EXTENSION_KEY_PEM }}
+          WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}
           REQUIRE_CHROME_KEY: "1"

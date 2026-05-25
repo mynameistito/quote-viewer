@@ -29,7 +29,8 @@ The script writes `key.pem` and prints the resulting extension ID + `gh` command
 The release workflow signs Chromium builds with `WXT_CHROME_KEY` (the raw private-key PEM). Register it once:
 
 ```bash
-gh secret set WXT_CHROME_KEY < key.pem
+gh secret set WXT_CHROME_KEY < key.pem # register the private key with CI (unix)
+Get-Content key.pem -Raw | gh secret set WXT_CHROME_KEY # register the private key with CI (win)
 ```
 
 (or via GitHub UI → Settings → Secrets and variables → Actions → New repository secret, name `WXT_CHROME_KEY`, value = full contents of `key.pem` including `-----BEGIN/END-----` lines).
