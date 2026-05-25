@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.2.2
+
+### Patch Changes
+
+- 03c49b4: Remove popup, background script, and on-install tab. The extension no longer has any popup or action-on-click behavior.
+
 ## 0.2.1
 
 ### Patch Changes
