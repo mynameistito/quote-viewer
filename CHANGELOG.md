@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.1.5
+
+### Patch Changes
+
+- 51fc23e: Update CICD Release Script and Pipeline
+
 ## 0.1.4
 
 ### Patch Changes
