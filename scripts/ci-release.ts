@@ -13,14 +13,23 @@ const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const version = pkg.version as string;
 const tag = `v${version}`;
 
-const remoteTag = execSync(`git ls-remote --tags origin refs/tags/${tag}`, {
-  cwd: ROOT,
-  encoding: "utf-8",
-}).trim();
-if (remoteTag) {
+const releaseExists = (() => {
+  try {
+    const assets = execSync(
+      `gh release view ${tag} --json assets --jq ".assets | length"`,
+      { cwd: ROOT, encoding: "utf-8" }
+    ).trim();
+    return assets !== "0";
+  } catch {
+    return false;
+  }
+})();
+
+if (releaseExists) {
   console.log(
-    `Tag ${tag} exists on origin — will ensure release assets are uploaded.`
+    `Release ${tag} already exists with assets — nothing to do. Exiting.`
   );
+  process.exit(0);
 }
 
 const keyPath = resolve(ROOT, "key.pem");
@@ -55,6 +64,12 @@ try {
 } catch {
   execSync(`git tag ${tag}`, { cwd: ROOT });
 }
+
+const remoteTag = execSync(`git ls-remote --tags origin refs/tags/${tag}`, {
+  cwd: ROOT,
+  encoding: "utf-8",
+}).trim();
+
 if (!remoteTag) {
   execSync(`git push origin ${tag}`, { cwd: ROOT });
 }
@@ -81,5 +96,7 @@ try {
     `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`
   );
 } catch {
-  run(`gh release upload ${tag} "${chromeZip}" "${firefoxZip}" --clobber`);
+  console.warn(
+    `Release ${tag} already exists — cannot upload assets to an immutable release.`
+  );
 }
