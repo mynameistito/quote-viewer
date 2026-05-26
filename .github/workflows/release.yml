@@ -24,12 +24,18 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - name: Create Release Pull Request or Publish
+      - name: Create Release Pull Request
+        id: changesets
         uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
         with:
           version: bun run version
-          publish: bun run ci:release
           createGithubReleases: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish GitHub Release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: bun run ci:release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WXT_CHROME_KEY: ${{ secrets.WXT_CHROME_KEY }}
