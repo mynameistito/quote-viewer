@@ -100,15 +100,23 @@ const notesPath = resolve(ROOT, ".changeset", "RELEASE_NOTES.md");
 writeFileSync(notesPath, body);
 
 try {
-  run(
-    `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`
+  execSync(
+    `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`,
+    { cwd: ROOT, stdio: "inherit" }
   );
 } catch (error) {
-  const msg =
-    error instanceof Error && "stderr" in error
-      ? String(error.stderr)
-      : String(error);
-  if (msg.includes("already exists")) {
+  let stderr = "";
+  try {
+    stderr = execSync(`gh release view ${tag} --json tagName --jq ".tagName"`, {
+      cwd: ROOT,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+  } catch {
+    // release doesn't exist — fall through to rethrow
+  }
+
+  if (stderr === tag) {
     console.warn(`Release ${tag} already exists — verifying assets.`);
     const raw = execSync(
       `gh release view ${tag} --json assets --jq ".assets[].name"`,
