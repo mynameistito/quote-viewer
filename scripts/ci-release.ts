@@ -13,21 +13,29 @@ const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const version = pkg.version as string;
 const tag = `v${version}`;
 
-const releaseExists = (() => {
+const releaseHasAllAssets = (() => {
   try {
-    const assets = execSync(
-      `gh release view ${tag} --json assets --jq ".assets | length"`,
+    const raw = execSync(
+      `gh release view ${tag} --json assets --jq ".assets[].name"`,
       { cwd: ROOT, encoding: "utf-8" }
     ).trim();
-    return assets !== "0";
+    if (!raw) {
+      return false;
+    }
+    const names = raw.split("\n");
+    const expected = [
+      `quote-viewer-${version}-chrome.zip`,
+      `quote-viewer-${version}-firefox.zip`,
+    ];
+    return expected.every((e) => names.includes(e));
   } catch {
     return false;
   }
 })();
 
-if (releaseExists) {
+if (releaseHasAllAssets) {
   console.log(
-    `Release ${tag} already exists with assets — nothing to do. Exiting.`
+    `Release ${tag} already exists with all expected assets — nothing to do. Exiting.`
   );
   process.exit(0);
 }
@@ -95,8 +103,16 @@ try {
   run(
     `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`
   );
-} catch {
-  console.warn(
-    `Release ${tag} already exists — cannot upload assets to an immutable release.`
-  );
+} catch (error) {
+  const msg =
+    error instanceof Error && "stderr" in error
+      ? String(error.stderr)
+      : String(error);
+  if (msg.includes("already exists")) {
+    console.warn(
+      `Release ${tag} already exists — cannot replace assets on an immutable release.`
+    );
+  } else {
+    throw error;
+  }
 }
