@@ -4,6 +4,28 @@ import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "..");
 
+const EXPECTED_ASSETS = (ver: string) => [
+  `quote-viewer-${ver}-chrome.zip`,
+  `quote-viewer-${ver}-firefox.zip`,
+];
+
+const fetchReleaseAssetNames = (releaseTag: string): string[] => {
+  const raw = execSync(
+    `gh release view ${releaseTag} --json assets --jq ".assets[].name"`,
+    { cwd: ROOT, encoding: "utf-8" }
+  ).trim();
+  return raw ? raw.split("\n") : [];
+};
+
+const verifyReleaseAssets = (releaseTag: string, ver: string): boolean => {
+  try {
+    const names = fetchReleaseAssetNames(releaseTag);
+    return EXPECTED_ASSETS(ver).every((e) => names.includes(e));
+  } catch {
+    return false;
+  }
+};
+
 const run = (cmd: string) => {
   console.log(`> ${cmd}`);
   execSync(cmd, { cwd: ROOT, stdio: "inherit" });
@@ -13,27 +35,7 @@ const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const version = pkg.version as string;
 const tag = `v${version}`;
 
-const releaseHasAllAssets = (() => {
-  try {
-    const raw = execSync(
-      `gh release view ${tag} --json assets --jq ".assets[].name"`,
-      { cwd: ROOT, encoding: "utf-8" }
-    ).trim();
-    if (!raw) {
-      return false;
-    }
-    const names = raw.split("\n");
-    const expected = [
-      `quote-viewer-${version}-chrome.zip`,
-      `quote-viewer-${version}-firefox.zip`,
-    ];
-    return expected.every((e) => names.includes(e));
-  } catch {
-    return false;
-  }
-})();
-
-if (releaseHasAllAssets) {
+if (verifyReleaseAssets(tag, version)) {
   console.log(
     `Release ${tag} already exists with all expected assets — nothing to do. Exiting.`
   );
@@ -118,16 +120,10 @@ try {
 
   if (stderr === tag) {
     console.warn(`Release ${tag} already exists — verifying assets.`);
-    const raw = execSync(
-      `gh release view ${tag} --json assets --jq ".assets[].name"`,
-      { cwd: ROOT, encoding: "utf-8" }
-    ).trim();
-    const present = raw ? raw.split("\n") : [];
-    const expected = [
-      `quote-viewer-${version}-chrome.zip`,
-      `quote-viewer-${version}-firefox.zip`,
-    ];
-    const missing = expected.filter((e) => !present.includes(e));
+    const present = fetchReleaseAssetNames(tag);
+    const missing = EXPECTED_ASSETS(version).filter(
+      (e) => !present.includes(e)
+    );
     if (missing.length > 0) {
       console.error(`Release ${tag} is missing assets: ${missing.join(", ")}`);
       process.exit(1);
