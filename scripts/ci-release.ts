@@ -4,6 +4,28 @@ import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "..");
 
+const EXPECTED_ASSETS = (ver: string) => [
+  `quote-viewer-${ver}-chrome.zip`,
+  `quote-viewer-${ver}-firefox.zip`,
+];
+
+const fetchReleaseAssetNames = (releaseTag: string): string[] => {
+  const raw = execSync(
+    `gh release view ${releaseTag} --json assets --jq ".assets[].name"`,
+    { cwd: ROOT, encoding: "utf-8" }
+  ).trim();
+  return raw ? raw.split("\n") : [];
+};
+
+const verifyReleaseAssets = (releaseTag: string, ver: string): boolean => {
+  try {
+    const names = fetchReleaseAssetNames(releaseTag);
+    return EXPECTED_ASSETS(ver).every((e) => names.includes(e));
+  } catch {
+    return false;
+  }
+};
+
 const run = (cmd: string) => {
   console.log(`> ${cmd}`);
   execSync(cmd, { cwd: ROOT, stdio: "inherit" });
@@ -13,14 +35,11 @@ const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
 const version = pkg.version as string;
 const tag = `v${version}`;
 
-const remoteTag = execSync(`git ls-remote --tags origin refs/tags/${tag}`, {
-  cwd: ROOT,
-  encoding: "utf-8",
-}).trim();
-if (remoteTag) {
+if (verifyReleaseAssets(tag, version)) {
   console.log(
-    `Tag ${tag} exists on origin — will ensure release assets are uploaded.`
+    `Release ${tag} already exists with all expected assets — nothing to do. Exiting.`
   );
+  process.exit(0);
 }
 
 const keyPath = resolve(ROOT, "key.pem");
@@ -55,6 +74,12 @@ try {
 } catch {
   execSync(`git tag ${tag}`, { cwd: ROOT });
 }
+
+const remoteTag = execSync(`git ls-remote --tags origin refs/tags/${tag}`, {
+  cwd: ROOT,
+  encoding: "utf-8",
+}).trim();
+
 if (!remoteTag) {
   execSync(`git push origin ${tag}`, { cwd: ROOT });
 }
@@ -77,9 +102,34 @@ const notesPath = resolve(ROOT, ".changeset", "RELEASE_NOTES.md");
 writeFileSync(notesPath, body);
 
 try {
-  run(
-    `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`
+  execSync(
+    `gh release create ${tag} --title "${tag}" --notes-file "${notesPath}" "${chromeZip}" "${firefoxZip}"`,
+    { cwd: ROOT, stdio: "inherit" }
   );
-} catch {
-  run(`gh release upload ${tag} "${chromeZip}" "${firefoxZip}" --clobber`);
+} catch (error) {
+  let stderr = "";
+  try {
+    stderr = execSync(`gh release view ${tag} --json tagName --jq ".tagName"`, {
+      cwd: ROOT,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+  } catch {
+    // release doesn't exist — fall through to rethrow
+  }
+
+  if (stderr === tag) {
+    console.warn(`Release ${tag} already exists — verifying assets.`);
+    const present = fetchReleaseAssetNames(tag);
+    const missing = EXPECTED_ASSETS(version).filter(
+      (e) => !present.includes(e)
+    );
+    if (missing.length > 0) {
+      console.error(`Release ${tag} is missing assets: ${missing.join(", ")}`);
+      process.exit(1);
+    }
+    console.log(`Release ${tag} has all expected assets — OK.`);
+  } else {
+    throw error;
+  }
 }
