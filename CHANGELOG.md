@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.2.5
+
+### Patch Changes
+
+- [`a14d001`](https://github.com/mynameistito/quote-viewer/commit/a14d001): Fix quote icon color to match Twitter's native action bar icon color
+
 ## 0.2.4
 
 ### Patch Changes
