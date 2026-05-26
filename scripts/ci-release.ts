@@ -109,9 +109,22 @@ try {
       ? String(error.stderr)
       : String(error);
   if (msg.includes("already exists")) {
-    console.warn(
-      `Release ${tag} already exists — cannot replace assets on an immutable release.`
-    );
+    console.warn(`Release ${tag} already exists — verifying assets.`);
+    const raw = execSync(
+      `gh release view ${tag} --json assets --jq ".assets[].name"`,
+      { cwd: ROOT, encoding: "utf-8" }
+    ).trim();
+    const present = raw ? raw.split("\n") : [];
+    const expected = [
+      `quote-viewer-${version}-chrome.zip`,
+      `quote-viewer-${version}-firefox.zip`,
+    ];
+    const missing = expected.filter((e) => !present.includes(e));
+    if (missing.length > 0) {
+      console.error(`Release ${tag} is missing assets: ${missing.join(", ")}`);
+      process.exit(1);
+    }
+    console.log(`Release ${tag} has all expected assets — OK.`);
   } else {
     throw error;
   }
