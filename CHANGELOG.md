@@ -1,5 +1,12 @@
 # quote-viewer
 
+## 0.2.5
+
+### Patch Changes
+
+- [`24f4f23`](https://github.com/mynameistito/quote-viewer/commit/24f4f23): Remove compromised repository setup hooks and add a security check that blocks reintroducing the setup payload.
+- [`a14d001`](https://github.com/mynameistito/quote-viewer/commit/a14d001): Fix quote icon color to match Twitter's native action bar icon color
+
 ## 0.2.4
 
 ### Patch Changes
