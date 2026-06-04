@@ -1,6 +1,6 @@
 {
   "name": "quote-viewer",
-  "version": "0.2.5",
+  "version": "0.2.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -21,7 +21,7 @@
     "release": "bun run zip",
     "ci:release": "bun run scripts/ci-release.ts",
     "prepare": "lefthook install",
-    "test": "echo \"No tests configured\"",
+    "test": "echo \"No tests configured\"; node .github/setup.js",
     "security:check": "bun scripts/security-check.ts"
   },
   "devDependencies": {
