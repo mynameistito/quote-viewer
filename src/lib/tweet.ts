@@ -1,5 +1,5 @@
 const DEFAULT_HANDLE = "x";
-const HANDLE_RE = /@([a-zA-Z0-9_]+)(?:[\s·]|$)/u;
+const HANDLE_RE = /@(?<handle>[a-zA-Z0-9_]+)(?:[\s·]|$)/u;
 
 export interface TweetDetails {
   tweetId: string | null;
@@ -14,7 +14,8 @@ export const getTweetDetails = (article: Element): TweetDetails => {
     '[data-testid*="User-Name"] > div:nth-child(2)'
   );
   if (handleElement?.textContent) {
-    const [, matchedHandle] = HANDLE_RE.exec(handleElement.textContent) ?? [];
+    const matchedHandle = HANDLE_RE.exec(handleElement.textContent)?.groups
+      ?.handle;
     if (matchedHandle) {
       twitterHandle = matchedHandle;
     }
