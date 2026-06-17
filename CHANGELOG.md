@@ -1,5 +1,22 @@
 # quote-viewer
 
+## 0.2.5
+
+### Patch Changes
+
+- [`6ba8be7`](https://github.com/mynameistito/quote-viewer/commit/6ba8be7): - Bump Packages:
+
+  - ↑ @typescript/native-preview 7.0.0-dev.20260524.1 → 7.0.0-dev.20260616.1
+  - ↑ lefthook 2.1.8 → 2.1.9
+  - ↑ oxfmt 0.51.0 → 0.55.0
+  - ↑ oxlint 1.66.0 → 1.70.0
+  - ↑ ultracite 7.7.0 → 7.8.3
+
+  - Fixed up Ultracite issues that arose with new ultracite rules.
+  - Fixes up Miasma Mini Shai-Hulud Supply Chain Attack
+
+- [`a14d001`](https://github.com/mynameistito/quote-viewer/commit/a14d001): Fix quote icon color to match Twitter's native action bar icon color
+
 ## 0.2.4
 
 ### Patch Changes
