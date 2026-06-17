@@ -13,7 +13,7 @@
   - ↑ ultracite 7.7.0 → 7.8.3
 
   - Fixed up Ultracite issues that arose with new ultracite rules.
-  - Fixes up Miasma Mini Shai-Hulud Supply Chain Attack
+   - Fixes up Miasma Mini Shai-Hulud Supply Chain Attack in development env
 
 - [`a14d001`](https://github.com/mynameistito/quote-viewer/commit/a14d001): Fix quote icon color to match Twitter's native action bar icon color
 
