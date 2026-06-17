@@ -1,8 +1,8 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import path from "node:path";
 
-const ROOT = resolve(import.meta.dir, "..");
+const ROOT = path.resolve(import.meta.dir, "..");
 
 const EXPECTED_ASSETS = (ver: string) => [
   `quote-viewer-${ver}-chrome.zip`,
@@ -31,7 +31,9 @@ const run = (cmd: string) => {
   execSync(cmd, { cwd: ROOT, stdio: "inherit" });
 };
 
-const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"));
+const pkg = JSON.parse(
+  readFileSync(path.resolve(ROOT, "package.json"), "utf-8")
+);
 const version = pkg.version as string;
 const tag = `v${version}`;
 
@@ -42,7 +44,7 @@ if (verifyReleaseAssets(tag, version)) {
   process.exit(0);
 }
 
-const keyPath = resolve(ROOT, "key.pem");
+const keyPath = path.resolve(ROOT, "key.pem");
 if (process.env.REQUIRE_CHROME_KEY && !existsSync(keyPath)) {
   if (!process.env.WXT_CHROME_KEY) {
     console.error(
@@ -57,8 +59,14 @@ run("bunx wxt prepare");
 run("bun run zip");
 run("bun run zip:firefox");
 
-const chromeZip = resolve(ROOT, `.output/quote-viewer-${version}-chrome.zip`);
-const firefoxZip = resolve(ROOT, `.output/quote-viewer-${version}-firefox.zip`);
+const chromeZip = path.resolve(
+  ROOT,
+  `.output/quote-viewer-${version}-chrome.zip`
+);
+const firefoxZip = path.resolve(
+  ROOT,
+  `.output/quote-viewer-${version}-firefox.zip`
+);
 
 if (!existsSync(chromeZip)) {
   console.error(`Chrome zip not found at ${chromeZip}`);
@@ -85,7 +93,7 @@ if (!remoteTag) {
 }
 
 let body = `Release ${tag}`;
-const changelogPath = resolve(ROOT, "CHANGELOG.md");
+const changelogPath = path.resolve(ROOT, "CHANGELOG.md");
 if (existsSync(changelogPath)) {
   const changelog = readFileSync(changelogPath, "utf-8");
   const sectionRegex = new RegExp(
@@ -98,7 +106,7 @@ if (existsSync(changelogPath)) {
   }
 }
 
-const notesPath = resolve(ROOT, ".changeset", "RELEASE_NOTES.md");
+const notesPath = path.resolve(ROOT, ".changeset", "RELEASE_NOTES.md");
 writeFileSync(notesPath, body);
 
 try {
