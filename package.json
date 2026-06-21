@@ -13,6 +13,8 @@
     "zip:all": "bun run zip && bun run zip:firefox",
     "gen-key": "bun scripts/gen-key.ts",
     "postinstall": "wxt prepare",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "typecheck": "tsgo --noEmit",
     "check": "ultracite check",
     "fix": "ultracite fix",
