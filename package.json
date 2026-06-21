@@ -17,6 +17,7 @@
     "check": "ultracite check",
     "fix": "ultracite fix",
     "changeset": "changeset",
+    "changeset-add": "bun ./scripts/add-changeset.ts",
     "version": "changeset version && bun scripts/linkify-changelog.ts && wxt prepare",
     "release": "bun run zip",
     "ci:release": "bun run scripts/ci-release.ts",
