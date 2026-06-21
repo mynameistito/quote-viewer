@@ -1,8 +1,7 @@
 import { defineContentScript } from "#imports";
+import { getTweetDetails, viewQuotedTweets } from "@/lib/tweet";
 
-import { getTweetDetails, viewQuotedTweets } from "../../lib/tweet";
-
-import "./style.css";
+import "@/entrypoints/content/style.css";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const QUOTE_ICON_PATHS = [
