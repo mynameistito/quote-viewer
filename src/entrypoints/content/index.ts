@@ -1,4 +1,4 @@
-import { defineContentScript } from "#imports";
+import { defineContentScript } from "wxt/utils/define-content-script";
 
 import { getTweetDetails, viewQuotedTweets } from "../../lib/tweet";
 
