@@ -22,7 +22,7 @@
     "fix": "ultracite fix",
     "knip": "bunx knip@latest",
     "changeset": "changeset",
-    "changeset-add": "bun ./scripts/add-changeset.ts",
+    "changeset-add": "bun ./scripts/changeset-add.ts",
     "version": "changeset version && bun scripts/linkify-changelog.ts && wxt prepare",
     "release": "bun run scripts/release.ts",
     "ci:release": "bun run release",
