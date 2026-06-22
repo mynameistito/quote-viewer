@@ -1,5 +1,12 @@
 # quote-viewer
 
+## 0.2.6
+
+### Patch Changes
+
+- [`24f0fc9`](https://github.com/mynameistito/quote-viewer/commit/24f0fc9): Add Bun test coverage for quote viewer behavior
+- [`ce74f52`](https://github.com/mynameistito/quote-viewer/commit/ce74f52): Use aliased imports for extension source files
+
 ## 0.2.5
 
 ### Patch Changes
