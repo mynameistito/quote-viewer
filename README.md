@@ -63,10 +63,10 @@ Chromium derives an unpacked extension ID from the extension key. For local deve
 Generate a key with:
 
 ```bash
-bun run gen-key
+bun run generate-key
 ```
 
-The script writes `key.pem` and prints the resulting extension ID. To use the same key in CI, register the private key as the `WXT_CHROME_KEY` GitHub Actions secret:
+The script writes `key.pem` and prints the resulting extension ID plus the GitHub CLI command to register the private key as the `WXT_CHROME_KEY` GitHub Actions secret:
 
 ```bash
 Get-Content key.pem -Raw | gh secret set WXT_CHROME_KEY
