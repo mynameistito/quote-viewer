@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.2.7
+
+### Patch Changes
+
+- [`1a63052`](https://github.com/mynameistito/quote-viewer/commit/1a63052): Harden and align the release pipeline.
+
 ## 0.2.6
 
 ### Patch Changes
