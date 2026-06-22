@@ -23,8 +23,8 @@ jobs:
       - name: Setup project
         uses: ./.github/actions/setup-bun-project
 
-      - name: Package extensions
-        run: bun run zip:all
+      - name: Build extensions
+        run: bun run build && bun run build:firefox
 
       - name: Comment extension artifacts
         uses: ./.github/actions/comment-extension-artifacts
