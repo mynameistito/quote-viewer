@@ -1,8 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Generates a fresh PKCS8 RSA-2048 private key (`key.pem`) using openssl,
- * then prints the derived SPKI public key (what Chromium uses for
- * `manifest.key` → persistent extension ID) plus the resulting extension ID.
+ * Generates a fresh PKCS8 RSA-2048 private key (`key.pem`) using openssl.
  *
  * Run once per repo. The file is gitignored.
  */
@@ -10,10 +8,19 @@ import { createHash, createPublicKey } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
 const KEY_PATH = "key.pem";
+const args = process.argv.slice(2).filter((arg) => arg !== "--");
+const invalidArgs = args.filter((arg) => arg !== "-f" && arg !== "--force");
+const force = args.some((arg) => arg === "-f" || arg === "--force");
 
-if (existsSync(KEY_PATH)) {
+if (invalidArgs.length > 0) {
+  console.error(`Unknown option: ${invalidArgs.join(", ")}`);
+  console.error("Usage: bun run generate-key [--force|-f]");
+  process.exit(1);
+}
+
+if (existsSync(KEY_PATH) && !force) {
   console.error(
-    `Refusing to overwrite existing ${KEY_PATH}. Delete it first if you really mean to rotate the extension ID.`
+    `Refusing to overwrite existing ${KEY_PATH}. Pass --force if you really mean to rotate the extension ID.`
   );
   process.exit(1);
 }
@@ -29,11 +36,12 @@ const proc = Bun.spawnSync({
     "-pkeyopt",
     "rsa_keygen_bits:2048",
   ],
-  stderr: "inherit",
-  stdout: "inherit",
+  stderr: "pipe",
+  stdout: "ignore",
 });
 
 if (proc.exitCode !== 0) {
+  console.error(proc.stderr.toString());
   console.error("openssl failed. Is it on PATH? (try a new shell)");
   process.exit(proc.exitCode ?? 1);
 }
@@ -49,18 +57,20 @@ const spkiB64 = spkiPem
   .replaceAll("-----END PUBLIC KEY-----", "")
   .replaceAll(/\s+/gu, "");
 
-// Chromium extension ID: sha256(SPKI DER) → take first 16 bytes → map 0-f to a-p
+// Chromium extension ID: sha256(SPKI DER) -> take first 16 bytes -> map 0-f to a-p
 const spkiDer = Buffer.from(spkiB64, "base64");
 const digest = createHash("sha256").update(spkiDer).digest("hex").slice(0, 32);
 const extensionId = [...digest]
   .map((c) => String.fromCodePoint(97 + Number.parseInt(c, 16)))
   .join("");
+const secretCommand =
+  process.platform === "win32"
+    ? `Get-Content ${KEY_PATH} -Raw | gh secret set WXT_CHROME_KEY`
+    : `gh secret set WXT_CHROME_KEY < ${KEY_PATH}`;
 
 console.log(`\n✔ Generated ${KEY_PATH}\n`);
 console.log(`Extension ID: ${extensionId}\n`);
-console.log("manifest.key (SPKI public, base64):");
-console.log(spkiB64);
 console.log(
-  "\nTo register the key with GitHub Actions (requires gh CLI logged in):\n"
+  "To register the key with GitHub Actions (requires gh CLI logged in):\n"
 );
-console.log(`  gh secret set WXT_CHROME_KEY < ${KEY_PATH}\n`);
+console.log(`${secretCommand}\n`);
