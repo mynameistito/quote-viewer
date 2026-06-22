@@ -1,4 +1,4 @@
-## Summary
+# Summary
 
 <!-- What changed and why? Keep this concise; avoid long AI-generated summaries. -->
 
