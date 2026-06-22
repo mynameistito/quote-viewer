@@ -23,7 +23,7 @@ Examples of unacceptable behavior include:
 
 Maintainers may edit, hide, lock, or delete comments, issues, pull requests, and other contributions that violate this Code of Conduct. Maintainers may also temporarily or permanently restrict participation when needed to protect the project and its contributors.
 
-If you see behavior that violates this policy, report it to the project maintainer. If the report involves a maintainer, use GitHub's platform reporting tools.
+If you see behavior that violates this policy and it is safe to discuss publicly, open an issue at <https://github.com/mynameistito/quote-viewer/issues/new/choose>. If the report is sensitive, involves private information, or involves a maintainer, use GitHub's platform reporting tools at <https://github.com/contact/report-abuse> instead.
 
 ## Scope
 
