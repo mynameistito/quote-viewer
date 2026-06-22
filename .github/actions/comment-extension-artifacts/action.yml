@@ -1,0 +1,40 @@
+name: Comment Extension Artifacts
+description: Upload extension packages and add a PR comment with the artifact link.
+
+inputs:
+  artifact-name:
+    description: Name for the uploaded artifact bundle.
+    default: extension-packages
+  artifact-path:
+    description: Glob for extension package files to upload.
+    default: .output/quote-viewer-*.zip
+
+runs:
+  using: composite
+  steps:
+    - name: Upload extension packages
+      id: upload-extension-packages
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-path }}
+        if-no-files-found: error
+
+    - name: Comment artifact link
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+      env:
+        ARTIFACT_URL: ${{ steps.upload-extension-packages.outputs.artifact-url }}
+      with:
+        script: |
+          const body = `Extension packages are ready for this PR:
+
+          [Download Chrome and Firefox zips](${process.env.ARTIFACT_URL})`;
+
+          const { owner, repo } = context.repo;
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: context.issue.number,
+            body,
+          });

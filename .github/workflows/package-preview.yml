@@ -1,0 +1,27 @@
+name: Package Preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup project
+        uses: ./.github/actions/setup-bun-project
+
+      - name: Package extensions
+        run: bun run zip:all
+
+      - name: Comment extension artifacts
+        uses: ./.github/actions/comment-extension-artifacts
