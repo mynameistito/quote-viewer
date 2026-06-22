@@ -7,17 +7,21 @@ inputs:
     default: extension-packages
   artifact-path:
     description: Glob for extension package files to upload.
-    default: .output/quote-viewer-*.zip
+    default: .output/**/*.zip
 
 runs:
   using: composite
   steps:
+    - name: List extension packages
+      shell: bash
+      run: find "${GITHUB_WORKSPACE}/.output" -type f -name "*.zip" -print
+
     - name: Upload extension packages
       id: upload-extension-packages
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.artifact-path }}
+        path: ${{ github.workspace }}/${{ inputs.artifact-path }}
         if-no-files-found: error
 
     - name: Comment artifact link
