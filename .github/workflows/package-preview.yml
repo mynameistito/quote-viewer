@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   package:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     name: package
     runs-on: ubuntu-latest
     steps:
