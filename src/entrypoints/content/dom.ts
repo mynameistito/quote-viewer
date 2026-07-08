@@ -10,6 +10,9 @@ type MutationObserverCtor = new (
   callback: MutationCallback
 ) => Pick<MutationObserver, "observe">;
 
+const NATIVE_QUOTES_LINK_SELECTOR = 'a[href$="/quotes"]';
+const HIDDEN_NATIVE_QUOTES_ATTR = "data-quote-viewer-hidden-native-quotes";
+
 export const createQuoteIconSvg = (doc: Document = document): SVGSVGElement => {
   const svg = doc.createElementNS(SVG_NS, "svg");
   svg.setAttribute("width", "1.6em");
@@ -74,12 +77,34 @@ export const createQuoteViewer = (
     attachQuoteIcon(article);
   };
 
+  const hideNativeQuotesLink = (anchor: Element): void => {
+    const target = anchor.parentElement ?? anchor;
+    target.setAttribute(HIDDEN_NATIVE_QUOTES_ATTR, "true");
+    target.setAttribute("aria-hidden", "true");
+
+    if ("style" in target) {
+      (target as HTMLElement).style.setProperty("display", "none", "important");
+    }
+  };
+
+  const hideNativeQuotesLinks = (root: ParentNode): void => {
+    if (root instanceof Element && root.matches(NATIVE_QUOTES_LINK_SELECTOR)) {
+      hideNativeQuotesLink(root);
+    }
+
+    for (const anchor of root.querySelectorAll(NATIVE_QUOTES_LINK_SELECTOR)) {
+      hideNativeQuotesLink(anchor);
+    }
+  };
+
   const processMutations = (mutationsList: MutationRecord[]): void => {
     for (const mutation of mutationsList) {
       for (const node of mutation.addedNodes) {
         if (!(node instanceof Element)) {
           continue;
         }
+
+        hideNativeQuotesLinks(node);
 
         if (node.tagName === "ARTICLE") {
           trySetIcon(node);
@@ -111,6 +136,8 @@ export const createQuoteViewer = (
   };
 
   const main = (): Pick<MutationObserver, "observe"> => {
+    hideNativeQuotesLinks(doc);
+
     for (const article of doc.querySelectorAll("article")) {
       trySetIcon(article);
     }
@@ -120,7 +147,7 @@ export const createQuoteViewer = (
     return observer;
   };
 
-  return { main, processMutations, trySetIcon };
+  return { hideNativeQuotesLinks, main, processMutations, trySetIcon };
 };
 
 export const setupQuoteViewer = (): Pick<MutationObserver, "observe"> =>
