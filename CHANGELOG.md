@@ -1,5 +1,11 @@
 # quote-viewer
 
+## 0.2.9
+
+### Patch Changes
+
+- [`295a593`](https://github.com/mynameistito/quote-viewer/commit/295a593): Hide X's native View quotes links when rendering custom quote buttons
+
 ## 0.2.8
 
 ### Patch Changes
