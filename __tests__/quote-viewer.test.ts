@@ -83,6 +83,14 @@ class TestElement extends EventTarget {
       );
     }
 
+    if (selector.startsWith('a[href$="') && selector.endsWith('"]')) {
+      const needle = selector.slice('a[href$="'.length, -2);
+      return (
+        this.tagName === "A" &&
+        this.getAttribute("href")?.endsWith(needle) === true
+      );
+    }
+
     return this.tagName.toLowerCase() === selector.toLowerCase();
   }
 
@@ -107,6 +115,16 @@ class TestElement extends EventTarget {
 
   setAttribute(name: string, value: string): void {
     this.attributes[name] = value;
+
+    if (name.startsWith("data-")) {
+      const parts = name.slice("data-".length).split("-");
+      const datasetKey = parts
+        .map((part, index) =>
+          index === 0 ? part : `${part.charAt(0).toUpperCase()}${part.slice(1)}`
+        )
+        .join("");
+      this.dataset[datasetKey] = value;
+    }
   }
 
   private descendants(): TestElement[] {
@@ -248,6 +266,21 @@ const createArticle = ({
 const mutationWith = (nodes: unknown[]): MutationRecord =>
   ({ addedNodes: nodes }) as unknown as MutationRecord;
 
+const appendNativeQuotesLink = (
+  doc: TestDocument,
+  parent: TestElement,
+  text = "View quotes",
+  href = "/jack/status/12345/quotes"
+): TestElement => {
+  const container = doc.createElement("div");
+  const anchor = doc.createElement("a");
+  anchor.setAttribute("href", href);
+  anchor.textContent = text;
+  container.append(anchor);
+  parent.append(container);
+  return container;
+};
+
 beforeEach(() => {
   TestMutationObserver.callback = null;
 });
@@ -363,6 +396,63 @@ describe("content DOM behavior", () => {
     expect(article.querySelector("button")?.getAttribute("aria-label")).toBe(
       "View quoted tweets"
     );
+  });
+
+  test("hides X's native View quotes link during setup", () => {
+    const { article, doc } = createArticle({ href: "/jack/status/12345" });
+    const nativeQuotes = appendNativeQuotesLink(doc, article);
+    installGlobals(doc);
+    const viewer = createQuoteViewer(asDocument(doc), asObserver());
+
+    viewer.main();
+
+    expect(nativeQuotes.dataset.quoteViewerHiddenNativeQuotes).toBe("true");
+    expect(nativeQuotes.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  test("hides X's native View quotes link when it is inserted later", () => {
+    const { article, doc } = createArticle({ href: "/jack/status/12345" });
+    installGlobals(doc);
+    const viewer = createQuoteViewer(asDocument(doc), asObserver());
+    const nativeQuotes = appendNativeQuotesLink(doc, article);
+
+    viewer.processMutations([mutationWith([nativeQuotes])]);
+
+    expect(nativeQuotes.dataset.quoteViewerHiddenNativeQuotes).toBe("true");
+    expect(nativeQuotes.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  test("hides localized native quotes links", () => {
+    const { article, doc } = createArticle({ href: "/jack/status/12345" });
+    const nativeQuotes = appendNativeQuotesLink(
+      doc,
+      article,
+      "Voir les citations"
+    );
+    installGlobals(doc);
+    const viewer = createQuoteViewer(asDocument(doc), asObserver());
+
+    viewer.main();
+
+    expect(nativeQuotes.dataset.quoteViewerHiddenNativeQuotes).toBe("true");
+    expect(nativeQuotes.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  test("does not hide non-quotes links", () => {
+    const { article, doc } = createArticle({ href: "/jack/status/12345" });
+    const nativeQuotes = appendNativeQuotesLink(
+      doc,
+      article,
+      "View reposts",
+      "/jack/status/12345/retweets"
+    );
+    installGlobals(doc);
+    const viewer = createQuoteViewer(asDocument(doc), asObserver());
+
+    viewer.main();
+
+    expect(nativeQuotes.dataset.quoteViewerHiddenNativeQuotes).toBeUndefined();
+    expect(nativeQuotes.getAttribute("aria-hidden")).toBeNull();
   });
 
   test("clicking the quote button navigates when a tweet ID exists", () => {

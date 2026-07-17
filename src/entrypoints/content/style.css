@@ -1,3 +1,7 @@
+[data-quote-viewer-hidden-native-quotes="true"] {
+  display: none !important;
+}
+
 .quoted-tweets-container {
   display: flex;
   justify-content: center;
