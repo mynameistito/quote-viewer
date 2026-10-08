@@ -1,5 +1,7 @@
 # quote-viewer
 
+> **Archived:** This extension is now maintained in the [browser-extensions monorepo](https://github.com/mynameistito/browser-extensions/tree/main/apps/quote-viewer). This repository is read-only; use the monorepo for future development and releases.
+
 `quote-viewer` is a cross-browser Manifest V3 extension that restores the "View quote tweets" button on Twitter/X web. It injects a small quote icon into tweet action bars and navigates directly to the tweet's `/quotes` route when clicked.
 
 The extension is written in TypeScript with [WXT](https://wxt.dev/) and targets both Chromium and Firefox.
