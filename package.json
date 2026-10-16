@@ -32,10 +32,10 @@
     "@changesets/cli": "3.0.3",
     "@types/bun": "^1.4.2",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
-    "lefthook": "^2.1.14",
-    "oxfmt": "^0.70.0",
-    "oxlint": "^1.85.0",
-    "ultracite": "7.12.0",
+    "lefthook": "^2.1.16",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "ultracite": "7.12.2",
     "wxt": "^0.21.4"
   },
   "overrides": {
